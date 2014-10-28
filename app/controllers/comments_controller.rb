@@ -40,7 +40,7 @@ class CommentsController < ApplicationController
   # POST /comments
   # POST /comments.json
   def create
-    @comment = Comment.new(params[:comment])
+    @comment = Comment.new(comments_params)
 
     respond_to do |format|
       if @comment.save
@@ -79,5 +79,11 @@ class CommentsController < ApplicationController
       format.html { redirect_to comments_url }
       format.json { head :no_content }
     end
+  end
+
+  private
+
+  def comments_params
+    params.require(:comment).permit(:body)
   end
 end

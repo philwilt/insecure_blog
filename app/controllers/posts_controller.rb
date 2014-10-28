@@ -2,8 +2,10 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.all
-
+    published = (params[:status] == 'published')
+    @posts = Post.where(published: published)
+      .search(params[:search])
+    logger.info("Params search is #{params[:search]}")
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @posts }
@@ -40,7 +42,7 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
-    @post = Post.new(params[:post])
+    @post = Post.new(post_params)
 
     respond_to do |format|
       if @post.save
@@ -79,5 +81,11 @@ class PostsController < ApplicationController
       format.html { redirect_to posts_url }
       format.json { head :no_content }
     end
+  end
+
+  private
+
+  def post_params
+    params.require(:post).permit(:title, :body)
   end
 end
